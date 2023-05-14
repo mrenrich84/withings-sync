@@ -1,0 +1,34 @@
+name: sync withings data to garmin
+
+on:
+   schedule:
+      - cron: '0 */8 * * *' # runs every 8 hours
+   workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.11.2'
+
+    - run: pip install withings-sync
+
+    - uses: DamianReeves/write-file-action@master
+      with:
+        path: /home/runner/.withings_user.json
+        contents: |
+          {
+            "access_token": "${{ secrets.WITHINGS_ACCESS_TOKEN }}",
+            "authentification_code": "${{ secrets.WITHINGS_AUTHENTICATION_TOKEN }}",
+            "refresh_token": "${{ secrets.WITHINGS_REFRESH_TOKEN }}",
+            "userid": ${{ secrets.WITHINGS_USER_ID }}
+          }
+        write-mode: overwrite
+
+    - run: withings-sync -f 2023-01-01
+      env:
+        GARMIN_USERNAME: ${{ secrets.GARMIN_USERNAME }}
+        GARMIN_PASSWORD: ${{ secrets.GARMIN_PASSWORD }}
