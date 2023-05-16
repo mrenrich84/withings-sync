@@ -2,7 +2,7 @@ name: sync withings data to garmin
 
 on:
    schedule:
-      - cron: '0 */8 * * *' # runs every 8 hours
+      - cron: '0 12 * * *' # runs every 8 hours
    workflow_dispatch:
 
 jobs:
@@ -28,7 +28,7 @@ jobs:
           }
         write-mode: overwrite
 
-    - run: withings-sync -f 2023-01-01
+    - run: withings-sync -f $(date +"%Y-%m-%d")
       env:
         GARMIN_USERNAME: ${{ secrets.GARMIN_USERNAME }}
         GARMIN_PASSWORD: ${{ secrets.GARMIN_PASSWORD }}
